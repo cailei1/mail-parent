@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>mail-parent</artifactId>
+        <groupId>com.onepiece</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>mail-api</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>mail-oms-api</module>
+        <module>mail-cart-api</module>
+        <module>mail-cms-api</module>
+        <module>mail-dictionary-api</module>
+        <module>mail-oms-api</module>
+        <module>mail-pay-api</module>
+        <module>mail-pms-api</module>
+        <module>mail-pay-api</module>
+        <module>mail-sms-api</module>
+        <module>mail-ums-api</module>
+    </modules>
+
+
+</project>
