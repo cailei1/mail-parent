@@ -1,6 +1,8 @@
 package com.cailei.mail.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cailei.base.result.ResultWarpper;
+import com.cailei.common.utils.JwtUtils;
 import com.cailei.mail.dto.ReceiveMember;
 import com.cailei.mail.entity.MailMember;
 import com.cailei.mail.mapper.MailMemberMapper;
@@ -33,13 +35,18 @@ public class MailMemberServiceImpl extends ServiceImpl<MailMemberMapper, MailMem
     PasswordEncoder passwordEncoder;
 
     @Override
-    public String register(ReceiveMember receiveMember) {
+    public ResultWarpper register(ReceiveMember receiveMember) {
+        // 1. 注册功能  防止用户名重复
+        if(receiveMember!=null && !receiveMember.getUsername().isEmpty()){
+//            memberService.searchByUserName(receiveMember.getUsername())
+            List<MailMember> mailMembers = searchByUserName(receiveMember.getUsername());
+            if(mailMembers!=null && mailMembers.size()>0) {
+                return ResultWarpper.getFailedResultWapper().data("改用户名已被占用，请重新起名").build();
+            }
+
+        }
+
         MailMember mailMember = new MailMember();
-//        mailMember.setId(15L);
-//        mailMember.setUsername("xiaocai");
-//        mailMember.setNickName("caicai");
-//        mailMember.setEmail("111");
-//        mailMember.setStatus(0);
         // 密码脱敏 设置
 
 //        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder()
@@ -50,8 +57,10 @@ public class MailMemberServiceImpl extends ServiceImpl<MailMemberMapper, MailMem
 
         mailMemberMapper.insert(mailMember);
 
-        return "success insert";
+        return ResultWarpper.getSuccessResultWapper().data("注册成功").build();
     }
+
+
 
     @Override
     public List<MailMember> searchByUserName(String username) {
@@ -62,5 +71,32 @@ public class MailMemberServiceImpl extends ServiceImpl<MailMemberMapper, MailMem
         }
 
         return null;
+    }
+
+    @Override
+    public ResultWarpper login(ReceiveMember receiveMember) {
+        // 登录功能
+        if(receiveMember.getUsername() == null){
+            return ResultWarpper.getFailedResultWapper().data("请检查用户名").build();
+        }
+
+        // 1. 验证用户名和密码是否正确
+        List<MailMember> mailMembers = searchByUserName(receiveMember.getUsername());
+        if(mailMembers!=null && mailMembers.size()>0){
+            // 验证密码
+            boolean matches = passwordEncoder.matches(receiveMember.getPassword(), mailMembers.get(0).getPassword());
+
+            if(!matches){
+                return ResultWarpper.getFailedResultWapper().data("请检查密码是否正确").build();
+            }
+        }else{
+            return ResultWarpper.getFailedResultWapper().data("请检查用户名是否正确").build();
+        }
+
+        String token = JwtUtils.createToken(receiveMember.getUsername());
+
+        return ResultWarpper.getFailedResultWapper().data(token).build();
+
+
     }
 }

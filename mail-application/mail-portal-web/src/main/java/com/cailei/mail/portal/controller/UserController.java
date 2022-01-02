@@ -35,46 +35,22 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public ResultWarpper<String> register(@RequestBody @Valid ReceiveMember receiveMember){
+    public ResultWarpper register(@RequestBody @Valid ReceiveMember receiveMember){
 
-        // 1. 注册功能  防止用户名重复
-        if(receiveMember!=null && !receiveMember.getUsername().isEmpty()){
-//            memberService.searchByUserName(receiveMember.getUsername())
-            List<MailMember> mailMembers = memberService.searchByUserName(receiveMember.getUsername());
-            if(mailMembers!=null && mailMembers.size()>0) {
-                return ResultWarpper.getFailedResultWapper().data("改用户名已被占用，请重新起名").build();
-            }
 
-        }
 
-        memberService.register(receiveMember);
+//        String msg = ;
 
-        return ResultWarpper.getSuccessResultWapper().data("注册成功").build();
+        return memberService.register(receiveMember);
     }
 
 
 
     @PostMapping("/login")
-    public String login(@RequestBody ReceiveMember receiveMember){
-        // 登录功能
-        if(receiveMember.getUsername() == null){
-            return "请检查用户名";
-        }
+    public ResultWarpper login(@RequestBody ReceiveMember receiveMember){
 
-        // 1. 验证用户名和密码是否正确
-        List<MailMember> mailMembers = memberService.searchByUserName(receiveMember.getUsername());
-        if(mailMembers!=null && mailMembers.size()>0){
-            // 验证密码
-            boolean matches = passwordEncoder.matches(receiveMember.getPassword(), mailMembers.get(0).getPassword());
 
-            if(matches){
-                return "登录成功";
-            }else{
-                return "请检查密码是否正确";
-            }
-        }else{
-            return "请检查用户名是否正确";
-        }
+        return memberService.login(receiveMember);
     }
 
 
